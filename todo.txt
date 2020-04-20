@@ -1,0 +1,9 @@
+TODO:
+
+	01 - non importante nelle prime fasi del progetto
+		FEATURE:
+			Fare il parsing anche di numeri negativi
+
+	02 - importante
+		DOCUMENTAZIONE:
+			Produrre una specifica tecnica di implementazione del parser
