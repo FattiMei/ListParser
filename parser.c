@@ -65,6 +65,8 @@ struct Node *listParser(char **string){
 
 	node = integerParser(&current);
 	if(node != NULL){
+		*string = current;
+
 		aux = charParser(&current, ',');
 
 		if(aux != NULL){
@@ -72,6 +74,8 @@ struct Node *listParser(char **string){
 			node = aux;
 
 			node->r_branch = listParser(&current);
+
+			*string = current;
 		}
 	}
 
