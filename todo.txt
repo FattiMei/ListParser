@@ -8,6 +8,6 @@ TODO:
 		DOCUMENTAZIONE:
 			Produrre una specifica tecnica di implementazione del parser
 
-	03 - importante
+	03 - RISOLTO
 		BUG:
 			Sistemare bug nella funzione listParser: non muove il puntatore "string"
