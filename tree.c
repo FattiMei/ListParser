@@ -27,3 +27,11 @@ void printTree(struct Node *root){
 	}
 	else printf("<!>");
 }
+
+void destroyTree(struct Node *root){
+	if(root != NULL){
+		destroyTree(root->l_branch);
+		destroyTree(root->r_branch);
+		free(root);
+	}
+}

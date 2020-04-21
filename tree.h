@@ -11,6 +11,7 @@ struct Node{
 
 struct Node *allocNode(struct Token token);
 
+void destroyTree(struct Node *root);
 void printTree(struct Node *root);
 
 #endif
