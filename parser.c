@@ -36,16 +36,24 @@ struct Node *integerParser(char **string){
 	struct Token token;
 	char *current;
 
+	int value = 0,
+	    sign = 1;
+
 	current = firstNonSpace(*string);
 
+	if(*current == '-'){
+		sign = -1;
+		current++;
+	}
 	if(isdigit(*current)){
-		int value = 0;
-
 		token.position = current;
+
 		do{
 			value = value * 10 + *current - '0';
 			current++;
 		}while(isdigit(*current));
+
+		value *= sign;
 
 		token.type = integer;
 		token.value = value;
