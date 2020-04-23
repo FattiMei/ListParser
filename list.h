@@ -8,5 +8,6 @@ struct List{
 
 struct List *addList(struct List *head, int element);
 void destroyList(struct List *head);
+void printList(struct List *head);
 
 #endif

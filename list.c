@@ -30,3 +30,19 @@ void destroyList(struct List *head){
 		free(head);
 	}
 }
+
+void printList(struct List *head){
+	//la faccio iterativa, non ricorsiva
+	struct List *aux;
+
+	if(head == NULL) printf("NULL");
+	else{
+		for(aux = head; aux != NULL; aux = aux->next){
+			printf("%d", aux->value);
+
+			if(aux->next != NULL) printf(", ");
+		}
+	}
+
+	putchar('\n');
+}
