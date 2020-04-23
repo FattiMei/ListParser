@@ -6,4 +6,7 @@ struct List{
 	struct List *next;
 };
 
+struct List *addList(struct List *head, int element);
+void destroyList(struct List *head);
+
 #endif
