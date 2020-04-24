@@ -1,40 +1,17 @@
 #include <malloc.h>
+#include <stdio.h>
 #include <ctype.h>
 
 #include "parser.h"
-#include "tree.h"
 
 char *firstNonSpace(char *s){
 	while(*s != '\0' && *s == ' ') s++;
 	return s;
 }
 
-struct Node *charParser(char **string, char match){
-	struct Node *node = NULL;
-	struct Token token;
+struct List *integerParser(char **string){
 	char *current;
-
-	current = firstNonSpace(*string);
-	
-	if(*current == match){
-		//inizializza un nuovo nodo
-		token.type = match;
-		token.value = 0;
-		token.position = current;
-
-		//aggiorna il puntatore alla stringa
-		*string = current + 1;
-
-		node = allocNode(token);
-	}
-
-	return node;
-}
-
-struct Node *integerParser(char **string){
-	struct Node *node = NULL;
-	struct Token token;
-	char *current;
+	struct List *head = NULL;
 
 	int value = 0,
 	    sign = 1;
@@ -46,8 +23,6 @@ struct Node *integerParser(char **string){
 		current++;
 	}
 	if(isdigit(*current)){
-		token.position = current;
-
 		do{
 			value = value * 10 + *current - '0';
 			current++;
@@ -55,37 +30,41 @@ struct Node *integerParser(char **string){
 
 		value *= sign;
 
-		token.type = integer;
-		token.value = value;
 
 		//aggiorna il puntatore alla stringa
 		*string = current;
 
-		node = allocNode(token);
+		head = (struct List *) malloc(sizeof(struct List));
+		head->next = NULL;
+		head->value = value;
+
 	}
 
-	return node;
+	return head;
 }
 
-struct Node *listParser(char **string){
-	struct Node *node = NULL, *aux = NULL;
+struct List *listParser(char **string){
+	struct List *head = NULL;
 	char *current = *string;
 
-	node = integerParser(&current);
-	if(node != NULL){
+	head = integerParser(&current);
+	if(head != NULL){
 		*string = current;
 
-		aux = charParser(&current, ',');
+		current = firstNonSpace(current);
+		
+		if(*current == ','){
+			current++;
 
-		if(aux != NULL){
-			aux->l_branch = node;
-			node = aux;
+			head->next = listParser(&current);
 
-			node->r_branch = listParser(&current);
+			if(head->next == NULL){
+				printf("Expected integer after comma\n");
 
-			*string = current;
+				//segnalazione più accurata dell'errore
+			}
 		}
 	}
 
-	return node;
+	return head;
 }
