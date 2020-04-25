@@ -41,9 +41,8 @@ struct List *integerParser(char **string, int *error_flag){
 		*error_flag = 0;
 	}
 	else{
-	       *error_flag = 1;
-
-	       if(*current == '-') current--;
+		*error_flag = 1;
+		//bisogna trova un modo per segnalare correttamente tutti gli errori
 	}
 
 	return head;
@@ -68,9 +67,9 @@ struct List *listParser(char **string, int *error_flag){
 				//segnalazione più accurata dell'errore
 			}
 		}
-		else if(*current == '\0') *error_flag = 0;
-		else *error_flag = 2;
+		else *error_flag = 0;
 	}
+	else *error_flag = 1;
 
 	return head;
 }
