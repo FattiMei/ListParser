@@ -5,7 +5,7 @@
 
 char *firstNonSpace(char *s);
 
-struct List *integerParser(char **string);
-struct List *listParser(char **string);
+struct List *integerParser(char **string, int *error_flag);
+struct List *listParser(char **string, int *error_flag);
 
 #endif

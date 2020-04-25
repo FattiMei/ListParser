@@ -3,13 +3,14 @@
 #include <ctype.h>
 
 #include "parser.h"
+#include "error.h"
 
 char *firstNonSpace(char *s){
 	while(*s != '\0' && *s == ' ') s++;
 	return s;
 }
 
-struct List *integerParser(char **string){
+struct List *integerParser(char **string, int *error_flag){
 	char *current;
 	struct List *head = NULL;
 
@@ -21,33 +22,38 @@ struct List *integerParser(char **string){
 	if(*current == '-'){
 		sign = -1;
 		current++;
-	}
+	}	
 	if(isdigit(*current)){
 		do{
 			value = value * 10 + *current - '0';
 			current++;
 		}while(isdigit(*current));
-
+		
 		value *= sign;
-
-
+			
 		//aggiorna il puntatore alla stringa
 		*string = current;
-
+			
 		head = (struct List *) malloc(sizeof(struct List));
 		head->next = NULL;
 		head->value = value;
 
+		*error_flag = 0;
+	}
+	else{
+	       *error_flag = 1;
+
+	       if(*current == '-') current--;
 	}
 
 	return head;
 }
 
-struct List *listParser(char **string){
+struct List *listParser(char **string, int *error_flag){
 	struct List *head = NULL;
 	char *current = *string;
 
-	head = integerParser(&current);
+	head = integerParser(&current, error_flag);
 	if(head != NULL){
 		*string = current;
 
@@ -56,14 +62,14 @@ struct List *listParser(char **string){
 		if(*current == ','){
 			current++;
 
-			head->next = listParser(&current);
+			head->next = listParser(&current, error_flag);
 
 			if(head->next == NULL){
-				printf("Expected integer after comma\n");
-
 				//segnalazione più accurata dell'errore
 			}
 		}
+		else if(*current == '\0') *error_flag = 0;
+		else *error_flag = 2;
 	}
 
 	return head;
