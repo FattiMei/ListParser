@@ -62,12 +62,9 @@ struct List *listParser(char **string, int *error_flag){
 			current++;
 
 			head->next = listParser(&current, error_flag);
-
-			if(head->next == NULL){
-				//segnalazione più accurata dell'errore
-			}
 		}
-		else *error_flag = 0;
+		else if(*current == '\0') *error_flag = 0;
+		else *error_flag = 1;
 	}
 	else *error_flag = 1;
 
