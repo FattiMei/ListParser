@@ -10,3 +10,6 @@ Ad alcuni programmi in C (tipicamente con finalità didattica) viene richiesto d
 
 # Applicazioni future
 Questo progetto è propedeutico alla realizzazione di un parser per l'acquisizione di matrici come questa: [[1, 2, 3],[4, 5, 6]]
+
+# Come si può migliorare il codice
+Si potrebbe eliminare la ricorsione di listParser utilizzando un ciclo, quindi migliorando l'efficienza del progetto.
