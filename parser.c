@@ -10,9 +10,8 @@ char *firstNonSpace(char *s){
 	return s;
 }
 
-struct List *integerParser(char **string, int *error_flag){
+int integerParser(char **string, int *error_flag){
 	char *current;
-	struct List *head = NULL;
 
 	int value = 0,
 	    sign = 1;
@@ -34,10 +33,6 @@ struct List *integerParser(char **string, int *error_flag){
 		//aggiorna il puntatore alla stringa
 		*string = current;
 			
-		head = (struct List *) malloc(sizeof(struct List));
-		head->next = NULL;
-		head->value = value;
-
 		*error_flag = 0;
 	}
 	else{
@@ -45,28 +40,51 @@ struct List *integerParser(char **string, int *error_flag){
 		//bisogna trova un modo per segnalare correttamente tutti gli errori
 	}
 
-	return head;
+	return value;
 }
 
 struct List *listParser(char **string, int *error_flag){
-	struct List *head = NULL;
+	struct List *head = NULL, *aux = NULL;
+
+	//stack
+	int stack[64];
+	int SP = 0;
+
+	//control
+	int tmp,
+	    success_flag = 0;
+
 	char *current = *string;
 
-	head = integerParser(&current, error_flag);
-	if(head != NULL){
-		*string = current;
+	do{
+		tmp = integerParser(&current, error_flag);
 
-		current = firstNonSpace(current);
-		
-		if(*current == ','){
-			current++;
 
-			head->next = listParser(&current, error_flag);
+		if(*error_flag == 0){
+			stack[SP++] = tmp;
+
+			if(SP > 63){
+				printf("Error: too many items in list\n");
+				break;
+			}
+
+			current = firstNonSpace(current);
+			if(*current == '\0') success_flag = 1;
+			else if(*current != ',') break;
+			else current++;
 		}
-		else if(*current == '\0') *error_flag = 0;
-		else *error_flag = 1;
-	}
-	else *error_flag = 1;
+		else break;
+	}while(success_flag == 0);
 
+	if(success_flag){
+		for(--SP; SP >= 0; SP--){
+			head = (struct List *) malloc(sizeof(struct List));
+			head->next = aux;
+			head->value = stack[SP];
+
+			head->next = aux;
+			aux = head;
+		}
+	}
 	return head;
 }
