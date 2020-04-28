@@ -1,6 +1,7 @@
 #include <malloc.h>
 #include <stdio.h>
 #include <ctype.h>
+#include <stdio.h>
 
 #include "parser.h"
 #include "error.h"
@@ -38,7 +39,9 @@ int integerParser(char *s, int *i, int *error_flag){
 	}
 	else{
 		*error_flag = 1;
-		//bisogna trova un modo per segnalare correttamente tutti gli errori
+
+		printf("Error: expected integer at position %d\n", current);
+		pointError(s, current);
 	}
 
 	return value;
@@ -74,7 +77,10 @@ struct List *listParser(char *s, int *i, int *error_flag){
 			spaceParser(s, &current, error_flag);
 
 			if(s[current] == '\0') success_flag = 1;
-			else if(s[current] != ',') break;
+			else if(s[current] != ','){
+				printf("Error: expected comma after integer at position %d\n", current);
+				pointError(s, current);
+			}
 			else current++;
 		}
 		else break;
