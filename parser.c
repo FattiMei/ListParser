@@ -5,34 +5,35 @@
 #include "parser.h"
 #include "error.h"
 
-char *firstNonSpace(char *s){
-	while(*s != '\0' && *s == ' ') s++;
-	return s;
+void spaceParser(char *s, int *i, int *error_flag){
+	int current = *i;
+	while(s[current] != '\0' && s[current] == ' ') current++;
+
+	*i = current;
 }
 
-int integerParser(char **string, int *error_flag){
-	char *current;
+int integerParser(char *s, int *i, int *error_flag){
+	int current = *i;
 
 	int value = 0,
 	    sign = 1;
 
-	current = firstNonSpace(*string);
+	spaceParser(s, &current, error_flag);
 
-	if(*current == '-'){
+	if(s[current] == '-'){
 		sign = -1;
 		current++;
 	}	
-	if(isdigit(*current)){
+	if(isdigit(s[current])){
 		do{
-			value = value * 10 + *current - '0';
+			value = value * 10 + s[current] - '0';
 			current++;
-		}while(isdigit(*current));
+		}while(isdigit(s[current]));
 		
 		value *= sign;
 			
 		//aggiorna il puntatore alla stringa
-		*string = current;
-			
+		*i = current;	
 		*error_flag = 0;
 	}
 	else{
@@ -43,7 +44,7 @@ int integerParser(char **string, int *error_flag){
 	return value;
 }
 
-struct List *listParser(char **string, int *error_flag){
+struct List *listParser(char *s, int *i, int *error_flag){
 	struct List *head = NULL, *aux = NULL;
 
 	//stack
@@ -54,13 +55,15 @@ struct List *listParser(char **string, int *error_flag){
 	int tmp,
 	    success_flag = 0;
 
-	char *current = *string;
+	int current = *i;
 
 	do{
-		tmp = integerParser(&current, error_flag);
-
+		tmp = integerParser(s, &current, error_flag);
 
 		if(*error_flag == 0){
+			//aggiorno la posizione del primo carattere non consumato
+			*i = current;
+
 			stack[SP++] = tmp;
 
 			if(SP > 63){
@@ -68,9 +71,10 @@ struct List *listParser(char **string, int *error_flag){
 				break;
 			}
 
-			current = firstNonSpace(current);
-			if(*current == '\0') success_flag = 1;
-			else if(*current != ',') break;
+			spaceParser(s, &current, error_flag);
+
+			if(s[current] == '\0') success_flag = 1;
+			else if(s[current] != ',') break;
 			else current++;
 		}
 		else break;

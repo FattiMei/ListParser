@@ -3,9 +3,8 @@
 
 #include "list.h"
 
-char *firstNonSpace(char *s);
-
-int integerParser(char **string, int *error_flag);
-struct List *listParser(char **string, int *error_flag);
+void spaceParser(char *s, int *i, int *error_flag);
+int integerParser(char *s, int *i, int *error_flag);
+struct List *listParser(char *s, int *i, int *error_flag);
 
 #endif

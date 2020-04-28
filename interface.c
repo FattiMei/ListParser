@@ -8,9 +8,9 @@
 struct List *interface(char *input){
 	char *ptr = input;
 	struct List *head = NULL;
-	int error_flag;
+	int error_flag, i = 0;
 
-	head = listParser(&ptr, &error_flag);
+	head = listParser(input, &i, &error_flag);
 
 	//soluzione temporanea, lancio un generico errore
 	if(error_flag == 0){
@@ -18,9 +18,7 @@ struct List *interface(char *input){
 		return head;
 	}
 	else{
-		//distruggo la lista perché non serve più
-		destroyList(head);
-
+		//qui non è necessario distruggere la lista
 		//segnalazione errore generico
 		printf("Syntax error\n");
 		return NULL;
