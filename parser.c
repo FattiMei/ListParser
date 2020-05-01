@@ -56,7 +56,7 @@ struct List *listParser(char *s, int *i, int *error_flag){
 
 	//control
 	int tmp,
-	    success_flag = 0;
+	    success_flag = 1;
 
 	int current = *i;
 
@@ -76,15 +76,17 @@ struct List *listParser(char *s, int *i, int *error_flag){
 
 			spaceParser(s, &current, error_flag);
 
-			if(s[current] == '\0') success_flag = 1;
+			if(s[current] == '\0');
 			else if(s[current] != ','){
 				printf("Error: expected comma after integer at position %d\n", current);
 				pointError(s, current);
+
+				success_flag = 0;
 			}
 			else current++;
 		}
-		else break;
-	}while(success_flag == 0);
+		else success_flag = 0;
+	}while(s[current] != '\0');
 
 	if(success_flag){
 		for(--SP; SP >= 0; SP--){
