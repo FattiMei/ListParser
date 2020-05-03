@@ -5,49 +5,50 @@
 
 #include "parser.h"
 #include "error.h"
+#include "buffer.h"
 
-void spaceParser(char *s, int *i, int *error_flag){
-	int current = *i;
-	while(s[current] != '\0' && s[current] == ' ') current++;
+void spaceParser(struct Buffer *B, int *error_flag){
+	int current = B->i;
+	while(B->string[current] != '\0' && B->string[current] == ' ') current++;
 
-	*i = current;
+	B->i = current;
 }
 
-int integerParser(char *s, int *i, int *error_flag){
-	int current = *i;
+int integerParser(struct Buffer *B, int *error_flag){
+	int current = B->i;
 
 	int value = 0,
 	    sign = 1;
 
-	spaceParser(s, &current, error_flag);
+	spaceParser(B, error_flag);
 
-	if(s[current] == '-'){
+	if(B->string[current] == '-'){
 		sign = -1;
 		current++;
 	}	
-	if(isdigit(s[current])){
+	if(isdigit(B->string[current])){
 		do{
-			value = value * 10 + s[current] - '0';
+			value = value * 10 + B->string[current] - '0';
 			current++;
-		}while(isdigit(s[current]));
+		}while(isdigit(B->string[current]));
 		
 		value *= sign;
 			
 		//aggiorna il puntatore alla stringa
-		*i = current;	
+		B->i = current;	
 		*error_flag = 0;
 	}
 	else{
 		*error_flag = 1;
 
 		printf("Error: expected integer at position %d\n", current);
-		pointError(s, current);
+		pointError(B->string, current);
 	}
 
 	return value;
 }
 
-struct List *listParser(char *s, int *i, int *error_flag){
+struct List *listParser(struct Buffer *B, int *error_flag){
 	struct List *head = NULL, *aux = NULL;
 
 	//stack
@@ -58,15 +59,12 @@ struct List *listParser(char *s, int *i, int *error_flag){
 	int tmp,
 	    success_flag = 1;
 
-	int current = *i;
+	int current = B->i;
 
 	do{
-		tmp = integerParser(s, &current, error_flag);
+		tmp = integerParser(B, error_flag);
 
 		if(*error_flag == 0){
-			//aggiorno la posizione del primo carattere non consumato
-			*i = current;
-
 			stack[SP++] = tmp;
 
 			if(SP > 63){
@@ -74,19 +72,19 @@ struct List *listParser(char *s, int *i, int *error_flag){
 				break;
 			}
 
-			spaceParser(s, &current, error_flag);
+			spaceParser(B, error_flag);
 
-			if(s[current] == '\0');
-			else if(s[current] != ','){
-				printf("Error: expected comma after integer at position %d\n", current);
-				pointError(s, current);
+			if(B->string[B->i] == '\0');
+			else if(B->string[B->i] != ','){
+				printf("Error: expected comma after integer at position %d\n", B->i);
+				pointError(B->string, B->i);
 
 				success_flag = 0;
 			}
-			else current++;
+			else B->i++;
 		}
 		else success_flag = 0;
-	}while(s[current] != '\0');
+	}while(B->string[B->i] != '\0');
 
 	if(success_flag){
 		for(--SP; SP >= 0; SP--){

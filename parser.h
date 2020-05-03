@@ -2,9 +2,10 @@
 #define PARSER_PROTOTYPES_INCLUDED
 
 #include "list.h"
+#include "buffer.h"
 
-void spaceParser(char *s, int *i, int *error_flag);
-int integerParser(char *s, int *i, int *error_flag);
-struct List *listParser(char *s, int *i, int *error_flag);
+void spaceParser(struct Buffer *B, int *error_flag);
+int integerParser(struct Buffer *B, int *error_flag);
+struct List *listParser(struct Buffer *B, int *error_flag);
 
 #endif

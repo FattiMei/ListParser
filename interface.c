@@ -4,13 +4,21 @@
 #include "list.h"
 #include "parser.h"
 #include "error.h"
+#include "stack.h"
+#include "buffer.h"
 
 struct List *interface(char *input){
-	char *ptr = input;
-	struct List *head = NULL;
-	int error_flag, i = 0;
+	struct Buffer B;
 
-	head = listParser(input, &i, &error_flag);
+	//inizializzazione buffer
+	B.string = input;
+	B.i = 0;
+
+	struct List *head = NULL;
+
+	int error_flag;
+
+	head = listParser(&B, &error_flag);
 
 	//soluzione temporanea, lancio un generico errore
 	if(error_flag == 0){
