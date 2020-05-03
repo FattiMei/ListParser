@@ -6,7 +6,6 @@
 #include "parser.h"
 #include "error.h"
 #include "buffer.h"
-#include "stack.h"
 
 void spaceParser(struct Buffer *B, int *error_flag){
 	int current = B->i;
@@ -49,7 +48,7 @@ int integerParser(struct Buffer *B, int *error_flag){
 	return value;
 }
 
-void listParser(struct Buffer *B, struct Stack *S, int *error_flag){
+void listParser(struct Buffer *B, int *stack, int *SP, int *error_flag){
 	struct List *head = NULL, *aux = NULL;
 
 	//control
@@ -60,9 +59,9 @@ void listParser(struct Buffer *B, struct Stack *S, int *error_flag){
 		tmp = integerParser(B, error_flag);
 
 		if(*error_flag == 0){
-			S->mem[(S->SP)++] = tmp;
+			stack[(*SP)++] = tmp;
 
-			if(S->SP > S->size - 1){
+			if(*SP > 63){
 				printf("Error: too many items in list\n");
 				*error_flag = 1;
 				break;

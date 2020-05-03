@@ -4,29 +4,27 @@
 #include "list.h"
 #include "parser.h"
 #include "error.h"
-#include "stack.h"
 #include "buffer.h"
 
 struct List *interface(char *input){
 	struct Buffer B;
-	struct Stack S;
+
+	int stack[64];
+	int SP = 0;
 
 	//inizializzazione buffer
 	B.string = input;
 	B.i = 0;
 
-	//inizializzazione stack
-	initStack(&S, 64);
-
 	struct List *head = NULL;
 
 	int error_flag;
 
-	listParser(&B, &S, &error_flag);
+	listParser(&B, stack, &SP, &error_flag);
 
 	//soluzione temporanea, lancio un generico errore
 	if(error_flag == 0){
-		for(int j = S.SP - 1; j >= 0; j--) head = push_front(head, S.mem[j]);
+		for(int j = SP - 1; j >= 0; j--) head = push_front(head, stack[j]);
 		return head;
 	}
 	else{
@@ -35,6 +33,4 @@ struct List *interface(char *input){
 		printf("Syntax error\n");
 		return NULL;
 	}
-
-	destroyStack(&S);
 }
