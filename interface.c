@@ -9,20 +9,24 @@
 
 struct List *interface(char *input){
 	struct Buffer B;
+	struct Stack S;
 
 	//inizializzazione buffer
 	B.string = input;
 	B.i = 0;
 
+	//inizializzazione stack
+	initStack(&S, 64);
+
 	struct List *head = NULL;
 
 	int error_flag;
 
-	head = listParser(&B, &error_flag);
+	listParser(&B, &S, &error_flag);
 
 	//soluzione temporanea, lancio un generico errore
 	if(error_flag == 0){
-		//il parsing è avvenuto con successo
+		for(int j = S.SP - 1; j >= 0; j--) head = push_front(head, S.mem[j]);
 		return head;
 	}
 	else{
@@ -31,4 +35,6 @@ struct List *interface(char *input){
 		printf("Syntax error\n");
 		return NULL;
 	}
+
+	destroyStack(&S);
 }

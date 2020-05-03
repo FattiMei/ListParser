@@ -3,7 +3,7 @@
 
 #include "list.h"
 
-struct List *addList(struct List *head, int element){
+struct List *push_back(struct List *head, int element){
 	struct List *aux,
 		    *new;
 
@@ -23,6 +23,17 @@ struct List *addList(struct List *head, int element){
 
 		return head;
 	}
+}
+
+struct List *push_front(struct List *head, int element){
+	struct List *new;
+
+	//alloca ed inizializza
+	new = (struct List *) malloc(sizeof(struct List));
+	new->value = element;
+	new->next = head;
+
+	return new;
 }
 
 void destroyList(struct List *head){
