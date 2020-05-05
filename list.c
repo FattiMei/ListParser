@@ -1,60 +1,75 @@
-#include <malloc.h>
 #include <stdio.h>
+#include <malloc.h>
 
+#include "token.h"
 #include "list.h"
 
-struct List *push_back(struct List *head, int element){
-	struct List *aux,
-		    *new;
+void initList(struct List *list){
+	list->head = NULL;
+	list->last = NULL;
+	list->size = 0;
+}
 
-	//alloca ed inizializza nuovo elemento
-	new = (struct List *) malloc(sizeof(struct List));
+void push_front(struct List *list, int element){
+	struct Node *new;
+
+	//allocazione nuovo nodo in memoria
+	new = (struct Node *) malloc(sizeof(struct Node));
+	new->value = element;
+
+	if(list->size == 0) list->last = new;
+
+	new->next = list->head;
+	list->head = new;
+
+	//incrementa la dimensione della lista
+	(list->size)++;
+}
+
+void push_back(struct List *list, int element){
+	struct Node *new;
+
+	//allocazione nuovo nodo in memoria
+	new = (struct Node *) malloc(sizeof(struct Node));
 	new->value = element;
 	new->next = NULL;
 
-	//verifica se la lista è vuota
-	if(head == NULL) return new;
+	if(list->size == 0){
+		list->head = new;
+		list->last = new;
+	}
 	else{
-		//cerca l'ultimo elemento
-		for(aux = head; aux->next != NULL; aux = aux->next);
-
-		//aggiungi all'ultimo elemento "new"
-		aux->next = new;
-
-		return head;
-	}
-}
-
-struct List *push_front(struct List *head, int element){
-	struct List *new;
-
-	//alloca ed inizializza
-	new = (struct List *) malloc(sizeof(struct List));
-	new->value = element;
-	new->next = head;
-
-	return new;
-}
-
-void destroyList(struct List *head){
-	if(head != NULL){
-		destroyList(head->next);
-		free(head);
-	}
-}
-
-void printList(struct List *head){
-	//la faccio iterativa, non ricorsiva
-	struct List *aux;
-
-	if(head == NULL) printf("NULL");
-	else{
-		for(aux = head; aux != NULL; aux = aux->next){
-			printf("%d", aux->value);
-
-			if(aux->next != NULL) printf(", ");
-		}
+		list->last->next = new;
+		list->last = new;
 	}
 
-	putchar('\n');
+	//incrementa la dimensione della lista
+	(list->size)++;
+}
+
+void destroyList(struct List *list){
+	struct Node *aux, *tmp;
+
+	aux = list->head;
+
+	while(aux != NULL){
+		tmp = aux->next;
+
+		free(tmp);
+		aux = tmp;
+	}
+
+	//riinizializzo i valori della lista
+	list->size = 0;
+	list->head = NULL;
+	list->last = NULL;
+}
+
+void printList(struct List *list){
+	struct Node *aux;
+
+	for(aux = list->head; aux != NULL; aux = aux->next){
+		printf("%d", aux->value);
+		if(aux->next != NULL) putchar(',');
+	}
 }

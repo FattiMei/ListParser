@@ -1,36 +1,25 @@
 #include <stdio.h>
 
+#include "parser.h"
 #include "interface.h"
 #include "list.h"
-#include "parser.h"
 #include "error.h"
-#include "buffer.h"
 
-struct List *interface(char *input){
-	struct Buffer B;
+struct List interface(char *input){
+	struct List list;
+	initList(&list);
 
-	int stack[64];
-	int SP = 0;
+	struct ErrorHandler hnd;
+	hnd.string = input;
+	hnd.success_flag = 0;
 
-	//inizializzazione buffer
-	B.string = input;
-	B.i = 0;
+	char *current;
 
-	struct List *head = NULL;
+	current = rowParser(input, &list, &hnd);
 
-	int error_flag;
+	printf("(\"%s\", ", current);
+	printList(&list);
+	printf(")\n");
 
-	listParser(&B, stack, &SP, &error_flag);
-
-	//soluzione temporanea, lancio un generico errore
-	if(error_flag == 0){
-		for(int j = SP - 1; j >= 0; j--) head = push_front(head, stack[j]);
-		return head;
-	}
-	else{
-		//qui non è necessario distruggere la lista
-		//segnalazione errore generico
-		printf("Syntax error\n");
-		return NULL;
-	}
+	return list;
 }

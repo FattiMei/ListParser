@@ -1,83 +1,112 @@
-#include <malloc.h>
-#include <stdio.h>
 #include <ctype.h>
 #include <stdio.h>
 
-#include "parser.h"
 #include "error.h"
-#include "buffer.h"
+#include "parser.h"
+#include "list.h"
 
-void spaceParser(struct Buffer *B, int *error_flag){
-	int current = B->i;
-	while(B->string[current] != '\0' && B->string[current] == ' ') current++;
+char *spaceParser(char *input, struct ErrorHandler *hnd){
+	while(*input != '\0' && *input == ' ') input++;
+	hnd->success_flag = 1;
 
-	B->i = current;
+	return input;
 }
 
-int integerParser(struct Buffer *B, int *error_flag){
-	int current = B->i;
+char *charParser(char c, char *input, struct List *list, struct ErrorHandler *hnd){
+	if(c != '\0' && *input == c){
+		hnd->success_flag = 1;
+		return input + 1;
+	}
+	else{
+		hnd->success_flag = 0;
+		return input;
+	}
+}
 
+char *integerParser(char *input, struct List *list, struct ErrorHandler *hnd){
+	char *current = NULL;
 	int value = 0,
 	    sign = 1;
 
-	spaceParser(B, error_flag);
-
-	if(B->string[current] == '-'){
+	//verifico la presenza di un eventuale segno meno
+	current = charParser('-', input, list, hnd);
+	if(current != input){
 		sign = -1;
 		current++;
-	}	
-	if(isdigit(B->string[current])){
+	}
+
+	if(isdigit(*current)){
 		do{
-			value = value * 10 + B->string[current] - '0';
+			value = value * 10 + *current - '0';
 			current++;
-		}while(isdigit(B->string[current]));
-		
+		}while(isdigit(*current));
+
 		value *= sign;
-			
-		//aggiorna il puntatore alla stringa
-		B->i = current;	
-		*error_flag = 0;
+
+		//aggiungo l'elemento alla lista
+		push_back(list, value);
+
+		//aggiorno il puntatore alla stringa
+		input = current;
+
+		//aggiorno gli errori
+		hnd->success_flag = 1;
 	}
 	else{
-		*error_flag = 1;
+		hnd->success_flag = 0;
 
-		printf("Error: expected integer at position %d\n", current);
-		pointError(B->string, current);
+		printf("Error: expected integer at position %d\n", current - hnd->string);
+		pointError(*hnd, current - hnd->string);
 	}
 
-	return value;
+	return input;
 }
 
-void listParser(struct Buffer *B, int *stack, int *SP, int *error_flag){
-	struct List *head = NULL, *aux = NULL;
+char *listParser(char *input, struct List *list, struct ErrorHandler *hnd){
+	char *current = input;
 
-	//control
-	int tmp,
-	    success_flag = 1;
+	current = spaceParser(current, hnd);
 
 	do{
-		tmp = integerParser(B, error_flag);
+		current = spaceParser(current, hnd);
+		current = integerParser(current, list, hnd);
 
-		if(*error_flag == 0){
-			stack[(*SP)++] = tmp;
+		if(hnd->success_flag == 1){
+			input = current;
 
-			if(*SP > 63){
-				printf("Error: too many items in list\n");
-				*error_flag = 1;
-				break;
+			current = spaceParser(current, hnd);
+
+			if(*current == '\0');
+			else if(*current == ','){
+				current++;
 			}
-
-			spaceParser(B, error_flag);
-
-			if(B->string[B->i] == '\0');
-			else if(B->string[B->i] != ','){
-				printf("Error: expected comma after integer at position %d\n", B->i);
-				pointError(B->string, B->i);
-
-				success_flag = 0;
-			}
-			else B->i++;
+			else break;
 		}
-		else success_flag = 0;
-	}while(B->string[B->i] != '\0');
+	}while(*current != '\0' && hnd->success_flag == 1);
+
+	return input;
+}
+
+char *rowParser(char *input, struct List *list, struct ErrorHandler *hnd){
+	char *current = input;
+
+	current = spaceParser(current, hnd);
+	current = charParser('[', current, list, hnd);
+
+	if(hnd->success_flag == 1){
+		current = listParser(current, list, hnd);
+
+		if(hnd->success_flag == 1){
+			current = spaceParser(current, hnd);
+			current = charParser(']', current, list, hnd);
+
+			input = current;
+		}
+	}
+	else{
+		printf("Error: expected '[' at the start of list\n");
+		pointError(*hnd, current - hnd->string);
+	}
+
+	return input;
 }

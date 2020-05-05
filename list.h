@@ -1,14 +1,22 @@
-#ifndef LIST_STRUCTURE_INCLUDED
-#define LIST_STRUCTURE_INCLUDED
+#ifndef LIST_STRUCT
+#define LIST_STRUCT
 
-struct List{
+#include "token.h"
+
+struct Node{
+	struct Node *next;
 	int value;
-	struct List *next;
 };
 
-struct List *push_front(struct List *head, int element);
-struct List *push_back(struct List *head, int element);
-void destroyList(struct List *head);
-void printList(struct List *head);
+struct List{
+	struct Node *head, *last;
+	int size;
+};
+
+void initList(struct List *list);
+void push_front(struct List *list, int element);
+void push_back(struct List *list, int element);
+void destroyList(struct List *list);
+void printList(struct List *list);
 
 #endif

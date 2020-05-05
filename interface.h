@@ -1,8 +1,8 @@
-#ifndef INTERFACE_PROTOTYPES_INCLUDED
-#define INTERFACE_PROTOTYPES_INCLUDED
+#ifndef INTERFACE_PROTOTYPE
+#define INTERFACE_PROTOTYPE
 
 #include "list.h"
 
-struct List *interface(char *input);
+struct List interface(char *input);
 
 #endif

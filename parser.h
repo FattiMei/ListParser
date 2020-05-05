@@ -1,11 +1,13 @@
-#ifndef PARSER_PROTOTYPES_INCLUDED
-#define PARSER_PROTOTYPES_INCLUDED
+#ifndef PARSER_PROTOTYPES
+#define PARSER_PROTOTYPES
 
 #include "list.h"
-#include "buffer.h"
+#include "error.h"
 
-void spaceParser(struct Buffer *B, int *error_flag);
-int integerParser(struct Buffer *B, int *error_flag);
-void listParser(struct Buffer *B, int *stack, int *SP, int *error_flag);
+char *spaceParser(char *input, struct ErrorHandler *hnd);
+char *charParser(char c, char *input, struct List *list, struct ErrorHandler *hnd);
+char *integerParser(char *input, struct List *list, struct ErrorHandler *hnd);
+char *listParser(char *input, struct List *list, struct ErrorHandler *hnd);
+char *rowParser(char *input, struct List *list, struct ErrorHandler *hnd);
 
 #endif

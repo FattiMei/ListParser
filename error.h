@@ -1,6 +1,11 @@
-#ifndef ERROR_PROTOTYPES_INCLUDED
-#define ERROR_PROTOTYPES_INCLUDED
+#ifndef ERROR_STRUCT
+#define ERROR_STRUCT
 
-void pointError(char *input, unsigned int position);
+struct ErrorHandler{
+	char *string;
+	int success_flag;
+};
+
+void pointError(struct ErrorHandler hnd, int position);
 
 #endif
